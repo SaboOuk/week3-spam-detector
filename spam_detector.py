@@ -11,6 +11,16 @@ class SpamDetector:
     """Machine Learning model to detect spam emails"""
     
     def __init__(self):
+        """Initialize the spam detector with ML components
+        
+        Attributes:
+            model: RandomForestClassifier with 100 estimators
+            scaler: StandardScaler for feature normalization
+            X_train, X_test: Training and testing feature sets
+            y_train, y_test: Training and testing labels
+            data: DataFrame containing email dataset
+            trained: Boolean indicating if model is trained
+        """
         self.model = RandomForestClassifier(n_estimators=100, random_state=42)
         self.scaler = StandardScaler()
         self.X_train = None
