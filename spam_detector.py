@@ -62,14 +62,22 @@ class SpamDetector:
         print(f"✅ Features prepared and scaled")
         
     def split_data(self, test_size=0.2):
-        """Split data into training and testing sets"""
+        """Split data into training and testing sets
+        
+        Args:
+            test_size (float): Proportion of data to use for testing (default: 0.2 = 20%)
+        """
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
             self.X, self.y, test_size=test_size, random_state=42
         )
         print(f"✅ Data split: {len(self.X_train)} training, {len(self.X_test)} testing")
         
     def train(self):
-        """Train the spam detector model"""
+        """Train the Random Forest spam detector model
+        
+        Fits the model on training data and sets trained flag.
+        Uses 80% of data for training as set by split_data().
+        """
         self.model.fit(self.X_train, self.y_train)
         self.trained = True
         print(f"✅ Model trained successfully")
