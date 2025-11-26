@@ -31,12 +31,28 @@ class SpamDetector:
         self.trained = False
         
     def load_data(self, filepath):
-        """Load email data from CSV"""
+        """Load email data from CSV file
+        
+        Args:
+            filepath (str): Path to CSV file containing email data
+            
+        Returns:
+            None: Sets self.data with loaded DataFrame
+        """
         self.data = pd.read_csv(filepath)
         print(f"✅ Loaded {len(self.data)} emails")
         
     def prepare_features(self):
-        """Prepare features for training"""
+        """Prepare and normalize features for model training
+        
+        Extracts features from the dataset:
+        - word_count: Number of words in email
+        - exclamations: Count of exclamation marks
+        - money_words: Count of money-related keywords
+        - all_caps: Count of ALL CAPS words
+        
+        Applies StandardScaler normalization to all features.
+        """
         # Features: word_count, exclamations, money_words, all_caps
         self.X = self.data[['word_count', 'exclamations', 'money_words', 'all_caps']].values
         self.y = self.data['is_spam'].values
