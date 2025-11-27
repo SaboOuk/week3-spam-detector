@@ -241,12 +241,34 @@ def main():
                 print("Please enter numbers only!")
                 
         elif choice == '2':
-            print("\nTesting spam email: 'WIN FREE CASH NOW!!!'")
-            detector.predict_email(30, 3, 4, 3)
+            # Select a random spam email from the dataset (if available)
+            if detector.data is not None and 'is_spam' in detector.data.columns:
+                spam_rows = detector.data[detector.data['is_spam'] == 1]
+                if len(spam_rows) > 0:
+                    sample = spam_rows.sample(1).iloc[0]
+                    print(f"\nTesting spam email: '{sample.get('subject', 'No subject')}'")
+                    detector.predict_email(int(sample['word_count']), int(sample['exclamations']), int(sample['money_words']), int(sample['all_caps']))
+                else:
+                    print("\nNo spam rows available in dataset — using default test email")
+                    detector.predict_email(30, 3, 4, 3)
+            else:
+                print("\nDataset not loaded — using default test email")
+                detector.predict_email(30, 3, 4, 3)
             
         elif choice == '3':
-            print("\nTesting normal email: 'Meeting tomorrow at 2pm'")
-            detector.predict_email(100, 0, 0, 0)
+            # Select a random normal (non-spam) email from the dataset (if available)
+            if detector.data is not None and 'is_spam' in detector.data.columns:
+                normal_rows = detector.data[detector.data['is_spam'] == 0]
+                if len(normal_rows) > 0:
+                    sample = normal_rows.sample(1).iloc[0]
+                    print(f"\nTesting normal email: '{sample.get('subject', 'No subject')}'")
+                    detector.predict_email(int(sample['word_count']), int(sample['exclamations']), int(sample['money_words']), int(sample['all_caps']))
+                else:
+                    print("\nNo normal rows available in dataset — using default test email")
+                    detector.predict_email(100, 0, 0, 0)
+            else:
+                print("\nDataset not loaded — using default test email")
+                detector.predict_email(100, 0, 0, 0)
             
         elif choice == '4':
             detector.test()
