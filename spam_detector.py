@@ -160,9 +160,13 @@ class SpamDetector:
         axes[1, 1].legend()
         
         plt.tight_layout()
-        plt.savefig('data/email_analysis.png', dpi=100)
-        print("✅ Visualization saved to 'data/email_analysis.png'")
-        plt.close()
+        try:
+            plt.savefig('data/email_analysis.png', dpi=100)
+            print("✅ Visualization saved to 'data/email_analysis.png'")
+        except Exception:
+            print("⚠️ Warning: could not save visualization to 'data/email_analysis.png' — skipping save.")
+        finally:
+            plt.close()
 
 
 def main():
@@ -175,15 +179,31 @@ def main():
     detector = SpamDetector()
     
     # First, create the data if it doesn't exist
+    data_saved = False
     if not os.path.exists('data/email_data.csv'):
         print("\n📝 Creating email dataset...")
         os.makedirs('data', exist_ok=True)
         from prepare_data import create_sample_emails
         data = create_sample_emails()
-        data.to_csv('data/email_data.csv', index=False)
+        try:
+            data.to_csv('data/email_data.csv', index=False)
+            data_saved = True
+        except Exception:
+            # Fall back to keeping data in memory if filesystem write fails
+            print("⚠️ Warning: could not write 'data/email_data.csv' — proceeding with in-memory dataset.")
+            detector.data = data
+            data_saved = False
+    else:
+        data_saved = True
     
     # Load and prepare data
-    detector.load_data('data/email_data.csv')
+    if detector.data is None:
+        # If we successfully saved the CSV, load from file; otherwise data already attached
+        if data_saved and os.path.exists('data/email_data.csv'):
+            detector.load_data('data/email_data.csv')
+        else:
+            from prepare_data import create_sample_emails
+            detector.data = create_sample_emails()
     detector.prepare_features()
     detector.split_data()
     
